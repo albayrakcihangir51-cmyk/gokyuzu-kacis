@@ -1,0 +1,143 @@
+```html
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Gökyüzü Kaçış</title>
+<meta name="description" content="Gökyüzü Kaçış - Eğlenceli tarayıcı yarış oyunu.">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif}
+body{background:linear-gradient(#62c8ff,#d9f5ff 65%,#8bd36b)}
+#game{position:relative;width:100vw;height:100vh;overflow:hidden}
+#road{position:absolute;left:20%;width:60%;height:100%;background:#555;border-left:8px solid white;border-right:8px solid white}
+.cloud{position:absolute;font-size:70px;opacity:.7;animation:cloud linear infinite}
+.c1{top:8%;left:-10%;animation-duration:35s}
+.c2{top:25%;left:70%;animation-duration:45s}
+.c3{top:45%;left:-15%;animation-duration:50s}
+@keyframes cloud{from{transform:translateX(0)}to{transform:translateX(120vw)}}
+
+#hud{
+position:absolute;top:15px;left:50%;transform:translateX(-50%);
+z-index:50;display:flex;gap:20px;align-items:center;
+background:rgba(0,0,0,.55);color:white;padding:10px 18px;
+border-radius:18px;font-size:20px;font-weight:bold
+}
+#soundBtn{border:0;border-radius:12px;padding:7px 12px;cursor:pointer;font-size:18px}
+
+#player{
+position:absolute;left:50%;bottom:8%;transform:translateX(-50%);
+font-size:58px;z-index:20;user-select:none
+}
+.enemy,.heart,.goldHeart{
+position:absolute;z-index:15;user-select:none;pointer-events:none
+}
+.enemy{font-size:52px}
+.truck{font-size:68px}
+.heart{font-size:42px}
+.goldHeart{font-size:52px;filter:drop-shadow(0 0 12px gold);animation:pulse .6s infinite alternate}
+@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.18)}}
+
+.overlay{
+position:absolute;inset:0;z-index:100;display:none;
+align-items:center;justify-content:center;background:rgba(0,0,0,.72)
+}
+.panel{
+width:min(90%,650px);padding:35px;border-radius:28px;
+background:rgba(15,20,35,.96);border:2px solid rgba(255,255,255,.2);
+color:white;text-align:center;box-shadow:0 0 40px rgba(0,0,0,.6)
+}
+.panel h1{margin-top:0;font-size:42px}
+.panel button{
+display:block;width:100%;margin:12px 0;padding:17px;border:0;
+border-radius:15px;font-size:21px;font-weight:bold;cursor:pointer;
+color:white;background:linear-gradient(90deg,#1677ff,#6b35ff)
+}
+.startBtn{
+width:320px!important;background:linear-gradient(90deg,#ff2d2d,#ff8c00)!important;
+border:3px solid white!important;font-size:28px!important
+}
+.choiceBoxes{display:flex;gap:30px;justify-content:center}
+.choiceBox{
+width:190px;height:190px;border-radius:25px;
+background:linear-gradient(145deg,#542cff,#1e0c66);
+border:4px solid #9f8cff;display:flex;align-items:center;
+justify-content:center;font-size:90px;cursor:pointer;box-shadow:0 0 30px #5136ff
+}
+.choiceBox:hover{transform:scale(1.06)}
+.settingsRow{margin:22px 0}
+.settingsRow label{display:block;margin-bottom:10px;font-size:20px}
+#volume{width:80%}
+.colors{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.colorBtn{width:48px;height:48px;border-radius:50%;border:3px solid white;cursor:pointer}
+.red{background:red}.blue{background:#1685ff}.green{background:#20c65a}
+.yellow{background:#ffd400}.black{background:#111}.white{background:white}
+#resultText{font-size:34px;font-weight:bold;color:#ffd43b}
+.bigScore{font-size:28px;margin:15px}
+#highScoreOverlay{pointer-events:none;background:transparent;align-items:flex-start;padding-top:120px}
+#highScoreText{font-size:42px;font-weight:bold;color:#ffe600;text-shadow:0 0 20px orange}
+</style>
+</head>
+
+<body>
+<div id="game">
+
+<div class="cloud c1">☁️</div>
+<div class="cloud c2">☁️</div>
+<div class="cloud c3">☁️</div>
+<div id="road"></div>
+
+<div id="hud">
+<span>🏆 <span id="score">0</span></span>
+<span id="lives">❤️❤️❤️</span>
+<button id="soundBtn">🔊</button>
+</div>
+
+<div id="player">🚗</div>
+
+<div id="startScreen" class="overlay" style="display:flex">
+<div class="panel">
+<h1>🏎️ GÖKYÜZÜ KAÇIŞ</h1>
+<p>WASD veya ok tuşlarıyla hareket et.</p>
+<p>Engellerden kaç, canları topla ve hızlan!</p>
+<button id="startBtn" class="startBtn">▶️ OYUNU BAŞLAT</button>
+</div>
+</div>
+
+<div id="pauseOverlay" class="overlay">
+<div class="panel">
+<h1>⏸️ OYUN DURDU</h1>
+<button id="resumeBtn">▶️ DEVAM ET</button>
+<button id="settingsBtn">⚙️ AYARLAR</button>
+<button id="menuBtn">🏠 MENÜ</button>
+</div>
+</div>
+
+<div id="settingsOverlay" class="overlay">
+<div class="panel">
+<h1>⚙️ AYARLAR</h1>
+<div class="settingsRow">
+<label>🔊 Ses: <span id="volumeValue">100%</span></label>
+<input id="volume" type="range" min="0" max="100" value="100">
+</div>
+<div class="settingsRow">
+<label>🚗 Araç rengi</label>
+<div class="colors">
+<button class="colorBtn red" data-color="red"></button>
+<button class="colorBtn blue" data-color="blue"></button>
+<button class="colorBtn green" data-color="green"></button>
+<button class="colorBtn yellow" data-color="yellow"></button>
+<button class="colorBtn black" data-color="black"></button>
+<button class="colorBtn white" data-color="white"></button>
+</div>
+</div>
+<button id="backSettingsBtn">↩️ GERİ</button>
+</div>
+</div>
+
+<div id="choiceOverlay" class="overlay">
+<div class="panel">
+<h1>🎁 ÖDÜL SEÇ!</h1>
+<p>Bi
+```
