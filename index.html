@@ -5,139 +5,1026 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Gökyüzü Kaçış</title>
-<meta name="description" content="Gökyüzü Kaçış - Eğlenceli tarayıcı yarış oyunu.">
+
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif}
-body{background:linear-gradient(#62c8ff,#d9f5ff 65%,#8bd36b)}
-#game{position:relative;width:100vw;height:100vh;overflow:hidden}
-#road{position:absolute;left:20%;width:60%;height:100%;background:#555;border-left:8px solid white;border-right:8px solid white}
-.cloud{position:absolute;font-size:70px;opacity:.7;animation:cloud linear infinite}
-.c1{top:8%;left:-10%;animation-duration:35s}
-.c2{top:25%;left:70%;animation-duration:45s}
-.c3{top:45%;left:-15%;animation-duration:50s}
-@keyframes cloud{from{transform:translateX(0)}to{transform:translateX(120vw)}}
-
-#hud{
-position:absolute;top:15px;left:50%;transform:translateX(-50%);
-z-index:50;display:flex;gap:20px;align-items:center;
-background:rgba(0,0,0,.55);color:white;padding:10px 18px;
-border-radius:18px;font-size:20px;font-weight:bold
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:Arial,sans-serif;
 }
-#soundBtn{border:0;border-radius:12px;padding:7px 12px;cursor:pointer;font-size:18px}
-
+body{
+  background:linear-gradient(#58c8ff,#dff7ff);
+}
+#game{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+}
+#road{
+  position:absolute;
+  left:20%;
+  width:60%;
+  height:100%;
+  background:#555;
+  border-left:8px solid white;
+  border-right:8px solid white;
+}
+.cloud{
+  position:absolute;
+  font-size:55px;
+  opacity:.8;
+  pointer-events:none;
+}
 #player{
-position:absolute;left:50%;bottom:8%;transform:translateX(-50%);
-font-size:58px;z-index:20;user-select:none
+  position:absolute;
+  bottom:70px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:58px;
+  z-index:10;
+  user-select:none;
 }
-.enemy,.heart,.goldHeart{
-position:absolute;z-index:15;user-select:none;pointer-events:none
+.enemy,.heart,.gold{
+  position:absolute;
+  z-index:8;
+  user-select:none;
 }
-.enemy{font-size:52px}
-.truck{font-size:68px}
+.enemy{font-size:55px}
 .heart{font-size:42px}
-.goldHeart{font-size:52px;filter:drop-shadow(0 0 12px gold);animation:pulse .6s infinite alternate}
-@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.18)}}
-
+.gold{
+  font-size:48px;
+  filter:drop-shadow(0 0 12px gold);
+}
+#hud{
+  position:absolute;
+  top:15px;
+  left:15px;
+  right:15px;
+  z-index:20;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:white;
+  font-size:22px;
+  font-weight:bold;
+  text-shadow:2px 2px 4px #000;
+}
+#soundBtn{
+  border:0;
+  border-radius:12px;
+  padding:9px 14px;
+  font-size:20px;
+  cursor:pointer;
+}
 .overlay{
-position:absolute;inset:0;z-index:100;display:none;
-align-items:center;justify-content:center;background:rgba(0,0,0,.72)
+  position:absolute;
+  inset:0;
+  z-index:100;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,.75);
+  color:white;
+  text-align:center;
 }
-.panel{
-width:min(90%,650px);padding:35px;border-radius:28px;
-background:rgba(15,20,35,.96);border:2px solid rgba(255,255,255,.2);
-color:white;text-align:center;box-shadow:0 0 40px rgba(0,0,0,.6)
+.hidden{display:none!important}
+h1{
+  font-size:55px;
+  margin:10px;
+  text-shadow:0 0 15px #00c8ff;
 }
-.panel h1{margin-top:0;font-size:42px}
-.panel button{
-display:block;width:100%;margin:12px 0;padding:17px;border:0;
-border-radius:15px;font-size:21px;font-weight:bold;cursor:pointer;
-color:white;background:linear-gradient(90deg,#1677ff,#6b35ff)
+button{
+  cursor:pointer;
+  font-weight:bold;
 }
-.startBtn{
-width:320px!important;background:linear-gradient(90deg,#ff2d2d,#ff8c00)!important;
-border:3px solid white!important;font-size:28px!important
+#startBtn{
+  width:320px;
+  height:80px;
+  border-radius:20px;
+  border:4px solid white;
+  color:white;
+  font-size:28px;
+  background:linear-gradient(90deg,#ff3131,#ff9d00,#ffe100);
+  box-shadow:0 0 25px #ff7b00;
 }
-.choiceBoxes{display:flex;gap:30px;justify-content:center}
-.choiceBox{
-width:190px;height:190px;border-radius:25px;
-background:linear-gradient(145deg,#542cff,#1e0c66);
-border:4px solid #9f8cff;display:flex;align-items:center;
-justify-content:center;font-size:90px;cursor:pointer;box-shadow:0 0 30px #5136ff
+.menuBtn{
+  width:280px;
+  padding:17px;
+  margin:8px;
+  border:0;
+  border-radius:15px;
+  font-size:21px;
 }
-.choiceBox:hover{transform:scale(1.06)}
-.settingsRow{margin:22px 0}
-.settingsRow label{display:block;margin-bottom:10px;font-size:20px}
-#volume{width:80%}
-.colors{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.colorBtn{width:48px;height:48px;border-radius:50%;border:3px solid white;cursor:pointer}
-.red{background:red}.blue{background:#1685ff}.green{background:#20c65a}
-.yellow{background:#ffd400}.black{background:#111}.white{background:white}
-#resultText{font-size:34px;font-weight:bold;color:#ffd43b}
-.bigScore{font-size:28px;margin:15px}
-#highScoreOverlay{pointer-events:none;background:transparent;align-items:flex-start;padding-top:120px}
-#highScoreText{font-size:42px;font-weight:bold;color:#ffe600;text-shadow:0 0 20px orange}
+#pauseOverlay{background:rgba(0,0,0,.7)}
+#settingsOverlay{background:rgba(0,0,0,.85)}
+.setting{
+  margin:12px;
+  font-size:20px;
+}
+.colorBtn{
+  width:45px;
+  height:45px;
+  margin:4px;
+  border:3px solid white;
+  border-radius:10px;
+}
+#choiceOverlay{
+  background:rgba(0,0,0,.8);
+}
+.boxes{
+  display:flex;
+  gap:50px;
+  margin-top:30px;
+}
+.box{
+  font-size:110px;
+  background:none;
+  border:0;
+  transition:.2s;
+}
+.box:hover{
+  transform:scale(1.15);
+}
+#resultOverlay{
+  background:rgba(0,0,0,.8);
+  font-size:35px;
+}
+#gameOverOverlay{
+  background:rgba(70,0,0,.82);
+}
+#gameOverOverlay h1{
+  color:#ff3333;
+  text-shadow:0 0 20px red;
+}
+.info{
+  font-size:22px;
+  margin:10px;
+}
 </style>
 </head>
 
 <body>
+
 <div id="game">
 
-<div class="cloud c1">☁️</div>
-<div class="cloud c2">☁️</div>
-<div class="cloud c3">☁️</div>
-<div id="road"></div>
+  <div class="cloud" style="left:5%;top:12%">☁️</div>
+  <div class="cloud" style="left:75%;top:20%">☁️</div>
+  <div class="cloud" style="left:35%;top:5%">☁️</div>
 
-<div id="hud">
-<span>🏆 <span id="score">0</span></span>
-<span id="lives">❤️❤️❤️</span>
-<button id="soundBtn">🔊</button>
+  <div id="road"></div>
+  <div id="player">🚗</div>
+
+  <div id="hud">
+    <div id="score">Skor: 0</div>
+    <div id="lives">❤️❤️❤️</div>
+    <button id="soundBtn">🔊</button>
+  </div>
+
+  <!-- BAŞLANGIÇ -->
+  <div id="startScreen" class="overlay">
+    <h1>🏎️ GÖKYÜZÜ KAÇIŞ</h1>
+    <div class="info">WASD veya ok tuşlarıyla hareket et</div>
+    <button id="startBtn">OYUNU BAŞLAT</button>
+  </div>
+
+  <!-- DURAKLAT -->
+  <div id="pauseOverlay" class="overlay hidden">
+    <h1>⏸️ DURAKLATILDI</h1>
+    <button class="menuBtn" id="resumeBtn">▶️ DEVAM ET</button>
+    <button class="menuBtn" id="settingsBtn">⚙️ AYARLAR</button>
+    <button class="menuBtn" id="menuBtn">🏠 MENÜ</button>
+  </div>
+
+  <!-- AYARLAR -->
+  <div id="settingsOverlay" class="overlay hidden">
+    <h1>⚙️ AYARLAR</h1>
+
+    <div class="setting">
+      🔊 Ses:
+      <input id="volume" type="range" min="0" max="100" value="70">
+    </div>
+
+    <div class="setting">
+      🚗 Araç rengi:
+      <br>
+      <button class="colorBtn" data-color="red" style="background:red"></button>
+      <button class="colorBtn" data-color="blue" style="background:blue"></button>
+      <button class="colorBtn" data-color="green" style="background:green"></button>
+      <button class="colorBtn" data-color="yellow" style="background:yellow"></button>
+      <button class="colorBtn" data-color="black" style="background:black"></button>
+      <button class="colorBtn" data-color="white" style="background:white"></button>
+    </div>
+
+    <button class="menuBtn" id="backSettings">↩️ GERİ</button>
+  </div>
+
+  <!-- SEÇİM -->
+  <div id="choiceOverlay" class="overlay hidden">
+    <h1>🎁 ÖDÜL SEÇ!</h1>
+    <div class="info">Kutulardan birini seç!</div>
+
+    <div class="boxes">
+      <button class="box" id="boxLeft">🎁</button>
+      <button class="box" id="boxRight">🎁</button>
+    </div>
+  </div>
+
+  <!-- SONUÇ -->
+  <div id="resultOverlay" class="overlay hidden">
+    <div id="resultText"></div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="gameOverOverlay" class="overlay hidden">
+    <h1>💀 OYUN BİTTİ</h1>
+    <div id="finalScore" class="info"></div>
+    <div id="finalHigh" class="info"></div>
+    <button class="menuBtn" id="restartBtn">🔄 TEKRAR OYNA</button>
+  </div>
+
 </div>
 
-<div id="player">🚗</div>
+<script>
+/* =========================
+   TEMEL DEĞİŞKENLER
+========================= */
 
-<div id="startScreen" class="overlay" style="display:flex">
-<div class="panel">
-<h1>🏎️ GÖKYÜZÜ KAÇIŞ</h1>
-<p>WASD veya ok tuşlarıyla hareket et.</p>
-<p>Engellerden kaç, canları topla ve hızlan!</p>
-<button id="startBtn" class="startBtn">▶️ OYUNU BAŞLAT</button>
-</div>
-</div>
+const game = document.getElementById("game");
+const road = document.getElementById("road");
+const player = document.getElementById("player");
 
-<div id="pauseOverlay" class="overlay">
-<div class="panel">
-<h1>⏸️ OYUN DURDU</h1>
-<button id="resumeBtn">▶️ DEVAM ET</button>
-<button id="settingsBtn">⚙️ AYARLAR</button>
-<button id="menuBtn">🏠 MENÜ</button>
-</div>
-</div>
+const scoreEl = document.getElementById("score");
+const livesEl = document.getElementById("lives");
 
-<div id="settingsOverlay" class="overlay">
-<div class="panel">
-<h1>⚙️ AYARLAR</h1>
-<div class="settingsRow">
-<label>🔊 Ses: <span id="volumeValue">100%</span></label>
-<input id="volume" type="range" min="0" max="100" value="100">
-</div>
-<div class="settingsRow">
-<label>🚗 Araç rengi</label>
-<div class="colors">
-<button class="colorBtn red" data-color="red"></button>
-<button class="colorBtn blue" data-color="blue"></button>
-<button class="colorBtn green" data-color="green"></button>
-<button class="colorBtn yellow" data-color="yellow"></button>
-<button class="colorBtn black" data-color="black"></button>
-<button class="colorBtn white" data-color="white"></button>
-</div>
-</div>
-<button id="backSettingsBtn">↩️ GERİ</button>
-</div>
-</div>
+const startScreen = document.getElementById("startScreen");
+const pauseOverlay = document.getElementById("pauseOverlay");
+const settingsOverlay = document.getElementById("settingsOverlay");
+const choiceOverlay = document.getElementById("choiceOverlay");
+const resultOverlay = document.getElementById("resultOverlay");
+const gameOverOverlay = document.getElementById("gameOverOverlay");
 
-<div id="choiceOverlay" class="overlay">
-<div class="panel">
-<h1>🎁 ÖDÜL SEÇ!</h1>
-<p>Bi
+let score = 0;
+let lives = 3;
+let running = false;
+let paused = false;
+let settingsOpen = false;
+let choiceOpen = false;
+
+let playerX = 50;
+let lastTime = 0;
+
+let currentVehicle = "🚗";
+
+let nextChoiceScore = 500;
+let lastGoldHeartScore = 0;
+
+let highScore = Number(localStorage.getItem("gokyuzuKacisHighScore") || 0);
+let highScoreShown = false;
+
+let gameVolume = Number(localStorage.getItem("gokyuzuVolume") || 70);
+let carColor = localStorage.getItem("gokyuzuCarColor") || "red";
+
+const keys = {};
+
+const movementKeys = [
+  "w","a","s","d",
+  "arrowup","arrowdown","arrowleft","arrowright"
+];
+
+/* =========================
+   SES
+========================= */
+
+let audioCtx = null;
+let soundOn = true;
+
+function initAudio(){
+  try{
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(audioCtx.state === "suspended"){
+      audioCtx.resume();
+    }
+  }catch(e){}
+}
+
+function beep(freq,duration,type="sine",volume=.08){
+  if(!soundOn || !audioCtx) return;
+
+  try{
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = type;
+    osc.frequency.value = freq;
+
+    gain.gain.value = volume * (gameVolume / 100);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(
+      .001,
+      audioCtx.currentTime + duration
+    );
+    osc.stop(audioCtx.currentTime + duration);
+  }catch(e){}
+}
+
+function startSound(){
+  beep(500,.1);
+  setTimeout(()=>beep(800,.12),100);
+}
+
+function crashSound(){
+  beep(120,.2,"sawtooth",.12);
+}
+
+function heartSound(){
+  beep(600,.1);
+  setTimeout(()=>beep(900,.15),100);
+}
+
+function vehicleSound(){
+  beep(700,.08);
+  setTimeout(()=>beep(1000,.12),90);
+}
+
+function gameOverSound(){
+  beep(500,.12,"square");
+  setTimeout(()=>beep(350,.12,"square"),120);
+  setTimeout(()=>beep(220,.2,"square"),240);
+}
+
+function highScoreSound(){
+  beep(600,.1);
+  setTimeout(()=>beep(800,.1),100);
+  setTimeout(()=>beep(1000,.15),200);
+}
+
+/* =========================
+   KLAVYE
+========================= */
+
+document.addEventListener("keydown",e=>{
+  const key = e.key.toLowerCase();
+
+  if(movementKeys.includes(key)){
+    keys[key] = true;
+    e.preventDefault();
+  }
+
+  if(key === "escape"){
+    if(choiceOpen || !running) return;
+
+    if(settingsOpen){
+      settingsOpen = false;
+      settingsOverlay.classList.add("hidden");
+      pauseOverlay.classList.remove("hidden");
+      return;
+    }
+
+    if(paused){
+      resumeGame();
+    }else{
+      pauseGame();
+    }
+  }
+});
+
+document.addEventListener("keyup",e=>{
+  const key = e.key.toLowerCase();
+
+  if(movementKeys.includes(key)){
+    keys[key] = false;
+    e.preventDefault();
+  }
+});
+
+/* =========================
+   ARAÇ
+========================= */
+
+function updateVehicle(){
+
+  let newVehicle;
+
+  if(score >= 400){
+    newVehicle = "🏁";
+  }else if(score >= 250){
+    newVehicle = "🏎️";
+  }else if(score >= 100){
+    newVehicle = "🛩️";
+  }else{
+    newVehicle = "🚗";
+  }
+
+  if(newVehicle !== currentVehicle){
+    currentVehicle = newVehicle;
+    vehicleSound();
+  }
+
+  player.textContent = currentVehicle;
+
+  if(currentVehicle === "🚗"){
+    player.style.filter = "hue-rotate(" + getHue(carColor) + "deg)";
+  }else{
+    player.style.filter = "none";
+  }
+}
+
+function getHue(color){
+  const values = {
+    red:0,
+    blue:200,
+    green:100,
+    yellow:50,
+    black:0,
+    white:0
+  };
+  return values[color] || 0;
+}
+
+/* =========================
+   CAN
+========================= */
+
+function updateLives(){
+  livesEl.textContent =
+    "❤️".repeat(lives) +
+    "🖤".repeat(3-lives);
+}
+
+function addLife(amount){
+  lives = Math.min(3,lives + amount);
+  updateLives();
+}
+
+/* =========================
+   DÜŞMAN
+========================= */
+
+function createEnemy(){
+
+  if(!running || paused || choiceOpen) return;
+
+  const enemy = document.createElement("div");
+  enemy.className = "enemy";
+
+  let truck = Math.random() < .07;
+
+  enemy.textContent = truck ? "🚚" : "🚙";
+  enemy.dataset.truck = truck ? "1" : "0";
+
+  const roadLeft = window.innerWidth * .20;
+  const roadRight = window.innerWidth * .80;
+
+  const x =
+    roadLeft + 30 +
+    Math.random() * (roadRight-roadLeft-60);
+
+  enemy.style.left = x + "px";
+  enemy.style.top = "-80px";
+
+  game.appendChild(enemy);
+}
+
+/* =========================
+   NORMAL KALP
+========================= */
+
+function createHeart(){
+
+  if(!running || paused || choiceOpen || lives >= 3) return;
+
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.textContent = "❤️";
+
+  const roadLeft = window.innerWidth*.20;
+  const roadRight = window.innerWidth*.80;
+
+  const x =
+    roadLeft + 30 +
+    Math.random()*(roadRight-roadLeft-60);
+
+  heart.style.left = x+"px";
+  heart.style.top = "-60px";
+
+  game.appendChild(heart);
+}
+
+/* =========================
+   ALTIN KALP
+========================= */
+
+function createGoldHeart(){
+
+  if(!running || paused || choiceOpen) return;
+
+  const gold = document.createElement("div");
+  gold.className = "gold";
+  gold.textContent = "💛";
+
+  const roadLeft = window.innerWidth*.20;
+  const roadRight = window.innerWidth*.80;
+
+  const x =
+    roadLeft + 30 +
+    Math.random()*(roadRight-roadLeft-60);
+
+  gold.style.left = x+"px";
+  gold.style.top = "-60px";
+
+  game.appendChild(gold);
+}
+
+/* =========================
+   ÇARPIŞMA
+========================= */
+
+function isColliding(a,b){
+
+  const r1 = a.getBoundingClientRect();
+  const r2 = b.getBoundingClientRect();
+
+  return !(
+    r1.right < r2.left ||
+    r1.left > r2.right ||
+    r1.bottom < r2.top ||
+    r1.top > r2.bottom
+  );
+}
+
+/* =========================
+   OYUNU BAŞLAT
+========================= */
+
+function startGame(){
+
+  initAudio();
+
+  score = 0;
+  lives = 3;
+
+  running = true;
+  paused = false;
+  settingsOpen = false;
+  choiceOpen = false;
+
+  playerX = 50;
+
+  currentVehicle = "🚗";
+
+  nextChoiceScore = 500;
+  lastGoldHeartScore = 0;
+
+  highScoreShown = false;
+
+  document.querySelectorAll(".enemy,.heart,.gold")
+    .forEach(x=>x.remove());
+
+  startScreen.classList.add("hidden");
+  pauseOverlay.classList.add("hidden");
+  settingsOverlay.classList.add("hidden");
+  choiceOverlay.classList.add("hidden");
+  resultOverlay.classList.add("hidden");
+  gameOverOverlay.classList.add("hidden");
+
+  player.style.left = playerX+"%";
+
+  updateLives();
+  updateVehicle();
+  updateScore();
+
+  startSound();
+
+  lastTime = performance.now();
+}
+
+/* =========================
+   SKOR
+========================= */
+
+function updateScore(){
+
+  scoreEl.textContent = "Skor: " + score;
+
+  updateVehicle();
+
+  if(score > highScore){
+
+    highScore = score;
+
+    localStorage.setItem(
+      "gokyuzuKacisHighScore",
+      highScore
+    );
+
+    if(!highScoreShown){
+
+      highScoreShown = true;
+
+      highScoreSound();
+
+      scoreEl.textContent =
+        "🏆 HIGH SKOR: " + score;
+
+      setTimeout(updateScore,1200);
+    }
+  }
+
+  if(score >= nextChoiceScore && !choiceOpen){
+    openChoice();
+  }
+
+  if(
+    score >= 200 &&
+    score % 200 === 0 &&
+    score !== lastGoldHeartScore
+  ){
+    lastGoldHeartScore = score;
+    createGoldHeart();
+  }
+}
+
+/* =========================
+   SEÇİM SİSTEMİ
+========================= */
+
+let leftReward = 1;
+let rightReward = 2;
+
+function openChoice(){
+
+  if(!running) return;
+
+  choiceOpen = true;
+
+  leftReward = Math.random() < .5 ? 1 : 2;
+  rightReward = leftReward === 1 ? 2 : 1;
+
+  choiceOverlay.classList.remove("hidden");
+}
+
+function chooseBox(side){
+
+  const reward =
+    side === "left"
+      ? leftReward
+      : rightReward;
+
+  choiceOverlay.classList.add("hidden");
+
+  const rewardText =
+    reward === 1
+      ? "🎉 +1 CAN! ❤️"
+      : "🎉 +2 CAN! ❤️";
+
+  document.getElementById("resultText").textContent =
+    rewardText;
+
+  resultOverlay.classList.remove("hidden");
+
+  addLife(reward);
+
+  nextChoiceScore += 500;
+
+  setTimeout(()=>{
+    resultOverlay.classList.add("hidden");
+    choiceOpen = false;
+  },1200);
+}
+
+document.getElementById("boxLeft")
+  .addEventListener("click",()=>chooseBox("left"));
+
+document.getElementById("boxRight")
+  .addEventListener("click",()=>chooseBox("right"));
+
+/* =========================
+   OYUN DÖNGÜSÜ
+========================= */
+
+function loop(time){
+
+  const delta = Math.min(
+    (time-lastTime)/16.67,
+    2
+  );
+
+  lastTime = time;
+
+  if(running && !paused && !choiceOpen){
+
+    let moveSpeed = 7 * delta;
+
+    if(keys["a"] || keys["arrowleft"])
+      playerX -= moveSpeed;
+
+    if(keys["d"] || keys["arrowright"])
+      playerX += moveSpeed;
+
+    if(keys["w"] || keys["arrowup"]){
+      // İleri tuşu
+    }
+
+    if(keys["s"] || keys["arrowdown"]){
+      // Geri tuşu
+    }
+
+    playerX = Math.max(21,Math.min(79,playerX));
+
+    player.style.left = playerX+"%";
+
+    updateObjects(delta);
+  }
+
+  requestAnimationFrame(loop);
+}
+
+function updateObjects(delta){
+
+  const enemies =
+    document.querySelectorAll(".enemy");
+
+  const hearts =
+    document.querySelectorAll(".heart");
+
+  const golds =
+    document.querySelectorAll(".gold");
+
+  let speed;
+
+  if(score < 100){
+    speed = 3 + Math.random()*2;
+  }else if(score < 250){
+    speed = 5 + Math.random()*3;
+  }else if(score < 400){
+    speed = 8 + Math.random()*4;
+  }else{
+    speed = 12 + Math.random()*5;
+  }
+
+  enemies.forEach(enemy=>{
+
+    let y = parseFloat(enemy.style.top) || 0;
+
+    y += speed * delta;
+
+    enemy.style.top = y+"px";
+
+    if(isColliding(player,enemy)){
+
+      const truck = enemy.dataset.truck === "1";
+
+      lives -= truck ? 2 : 1;
+
+      if(lives < 0) lives = 0;
+
+      updateLives();
+
+      crashSound();
+
+      enemy.remove();
+
+      if(lives <= 0){
+        gameOver();
+      }
+
+      return;
+    }
+
+    if(y > window.innerHeight+100){
+
+      enemy.remove();
+
+      score += 5;
+
+      updateScore();
+    }
+  });
+
+  hearts.forEach(heart=>{
+
+    let y = parseFloat(heart.style.top) || 0;
+
+    y += 4*delta;
+
+    heart.style.top = y+"px";
+
+    if(isColliding(player,heart)){
+
+      addLife(1);
+      heartSound();
+      heart.remove();
+
+      return;
+    }
+
+    if(y > window.innerHeight+80){
+      heart.remove();
+    }
+  });
+
+  golds.forEach(gold=>{
+
+    let y = parseFloat(gold.style.top) || 0;
+
+    y += 5*delta;
+
+    gold.style.top = y+"px";
+
+    if(isColliding(player,gold)){
+
+      addLife(2);
+      heartSound();
+      gold.remove();
+
+      return;
+    }
+
+    if(y > window.innerHeight+80){
+      gold.remove();
+    }
+  });
+}
+
+/* =========================
+   GAME OVER
+========================= */
+
+function gameOver(){
+
+  running = false;
+  paused = false;
+  choiceOpen = false;
+
+  gameOverSound();
+
+  document.getElementById("finalScore").textContent =
+    "Skorun: " + score;
+
+  document.getElementById("finalHigh").textContent =
+    "🏆 En yüksek skor: " + highScore;
+
+  gameOverOverlay.classList.remove("hidden");
+}
+
+/* =========================
+   PAUSE
+========================= */
+
+function pauseGame(){
+
+  if(!running || choiceOpen) return;
+
+  paused = true;
+
+  pauseOverlay.classList.remove("hidden");
+}
+
+function resumeGame(){
+
+  paused = false;
+
+  pauseOverlay.classList.add("hidden");
+  settingsOverlay.classList.add("hidden");
+
+  lastTime = performance.now();
+}
+
+/* =========================
+   MENÜ
+========================= */
+
+function goMenu(){
+
+  running = false;
+  paused = false;
+  settingsOpen = false;
+  choiceOpen = false;
+
+  pauseOverlay.classList.add("hidden");
+  settingsOverlay.classList.add("hidden");
+  choiceOverlay.classList.add("hidden");
+  resultOverlay.classList.add("hidden");
+  gameOverOverlay.classList.add("hidden");
+
+  document.querySelectorAll(".enemy,.heart,.gold")
+    .forEach(x=>x.remove());
+
+  startScreen.classList.remove("hidden");
+}
+
+/* =========================
+   BUTONLAR
+========================= */
+
+document.getElementById("startBtn")
+  .addEventListener("click",startGame);
+
+document.getElementById("resumeBtn")
+  .addEventListener("click",resumeGame);
+
+document.getElementById("settingsBtn")
+  .addEventListener("click",()=>{
+    settingsOpen = true;
+    pauseOverlay.classList.add("hidden");
+    settingsOverlay.classList.remove("hidden");
+  });
+
+document.getElementById("backSettings")
+  .addEventListener("click",()=>{
+    settingsOpen = false;
+    settingsOverlay.classList.add("hidden");
+    pauseOverlay.classList.remove("hidden");
+  });
+
+document.getElementById("menuBtn")
+  .addEventListener("click",goMenu);
+
+document.getElementById("restartBtn")
+  .addEventListener("click",startGame);
+
+/* =========================
+   SES BUTONU
+========================= */
+
+document.getElementById("soundBtn")
+  .addEventListener("click",()=>{
+
+    soundOn = !soundOn;
+
+    document.getElementById("soundBtn").textContent =
+      soundOn ? "🔊" : "🔇";
+
+    if(soundOn){
+      initAudio();
+      beep(700,.1);
+    }
+  });
+
+/* =========================
+   AYARLAR
+========================= */
+
+const volumeSlider =
+  document.getElementById("volume");
+
+volumeSlider.value = gameVolume;
+
+volumeSlider.addEventListener("input",()=>{
+  gameVolume = Number(volumeSlider.value);
+
+  localStorage.setItem(
+    "gokyuzuVolume",
+    gameVolume
+  );
+});
+
+document.querySelectorAll(".colorBtn")
+  .forEach(btn=>{
+
+    btn.addEventListener("click",()=>{
+
+      carColor = btn.dataset.color;
+
+      localStorage.setItem(
+        "gokyuzuCarColor",
+        carColor
+      );
+
+      updateVehicle();
+    });
+  });
+
+/* =========================
+   SPAWN SİSTEMLERİ
+========================= */
+
+setInterval(createEnemy,700);
+
+setInterval(createHeart,25000);
+
+/* =========================
+   BAŞLANGIÇ
+========================= */
+
+updateLives();
+updateVehicle();
+
+requestAnimationFrame(loop);
+
+</script>
+
+</body>
+</html>
 ```
